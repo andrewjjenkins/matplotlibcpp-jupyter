@@ -4,28 +4,45 @@ RUN apt-get update \
   && apt-get install -y wget bzip2 make git \
   && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q "http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" -O miniconda.sh \
-  && bash miniconda.sh -b -p $HOME/miniconda
+RUN wget -qO- https://micromamba.snakepit.net/api/micromamba/linux-64/latest | \
+  tar -xvj bin/micromamba \
+  && mkdir /micromamba \
+  && micromamba shell init -s bash -p /micromamba
 
-RUN export PATH="$HOME/miniconda/bin:$PATH" \
-  && hash -r \
-  && conda config --set always_yes yes --set changeps1 no \
-  && conda update -q conda \
-  && conda install clang clang-12 clang-tools clangdev clangxx libclang libclang-cpp libclang-cpp12 python-clang cmake -c conda-forge \
-  && conda install xeus=0.23.3 cppzmq=4.3.0 xproperty=0.10.1 xwidgets=0.20.0 -c conda-forge \
-  && conda install clang clangdev libcxx -c conda-forge
-#  && conda install gxx_linux-64=7.3.0 -c conda-forge
+COPY build-environment.yml /root/build-environment.yml
 
-SHELL [ "/root/miniconda/bin/conda", "run", "--no-capture-output", "-n", "root", "/bin/bash", "-c" ]
+RUN export MAMBA_EXE=/usr/bin/micromamba \
+  && export MAMBA_ROOT_PREFIX=/micromamba \
+  && . /micromamba/etc/profile.d/mamba.sh \
+  && micromamba create -n xplot -f /root/build-environment.yml
 
 COPY xplot /root/xplot
 
-RUN mkdir /root/xplot/build \
+RUN export MAMBA_EXE=/usr/bin/micromamba \
+  && export MAMBA_ROOT_PREFIX=/micromamba \
+  && . /micromamba/etc/profile.d/mamba.sh \
+  && micromamba activate xplot \
+  && mkdir /root/xplot/build \
   && cd /root/xplot/build \
   && env \
-  && cmake -D CMAKE_INSTALL_PREFIX=$HOME/miniconda/ -D DOWNLOAD_GTEST=ON .. \
-  && make install \
-  && make test_xplot
+  && cmake \
+    -D CMAKE_INSTALL_PREFIX=/micromamba/envs/xplot \
+    -D DOWNLOAD_GTEST=ON \
+    -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld" \
+    -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" \
+    -D CMAKE_CXX_FLAGS="--sysroot=/micromamba/envs/xplot/x86_64-conda-linux-gnu/sysroot/" \
+    -D CMAKE_C_FLAGS="--sysroot=/micromamba/envs/xplot/x86_64-conda-linux-gnu/sysroot/" \
+    .. \
+  && make VERBOSE=1 -j4 install \
+  && make test_xplot \
+  && cd test \
+  && ./test_xplot
+
+RUN export MAMBA_EXE=/usr/bin/micromamba \
+  && export MAMBA_ROOT_PREFIX=/micromamba \
+  && . /micromamba/etc/profile.d/mamba.sh \
+  && micromamba activate xplot \
+  && micromamba install jupyter -c conda-forge
 
 EXPOSE 8889
 
