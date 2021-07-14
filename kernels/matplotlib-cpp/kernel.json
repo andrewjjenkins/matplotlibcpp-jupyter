@@ -1,0 +1,14 @@
+{
+  "display_name": "C++14 Matplotlib",
+  "argv": [
+      "/micromamba/envs/clingmpl/bin/xcpp",
+      "-f",
+      "{connection_file}",
+      "-I/micromamba/envs/clingmpl/include/python3.9",
+      "-I/micromamba/envs/clingmpl/lib/python3.9/site-packages/numpy/core/include",
+      "-L/micromamba/envs/clingmpl/lib",
+      "-std=c++14"
+  ],
+  "language": "C++14"
+}
+

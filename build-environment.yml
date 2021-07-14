@@ -13,7 +13,4 @@ dependencies:
   - lld=11.1
   - libstdcxx-devel_linux-64
   - cmake
-  - xeus=0.23.3
-  - cppzmq=4.3.0
-  - xproperty=0.10.1
-  - xwidgets=0.20.0
+  - matplotlib

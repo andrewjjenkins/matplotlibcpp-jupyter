@@ -14,29 +14,30 @@ COPY build-environment.yml /root/build-environment.yml
 RUN export MAMBA_EXE=/usr/bin/micromamba \
   && export MAMBA_ROOT_PREFIX=/micromamba \
   && . /micromamba/etc/profile.d/mamba.sh \
-  && micromamba create -n xplot -f /root/build-environment.yml
+  && micromamba create -n clingmpl -f /root/build-environment.yml
 
-COPY xplot /root/xplot
+COPY matplotlib-cpp /root/matplotlib-cpp
 
 RUN export MAMBA_EXE=/usr/bin/micromamba \
   && export MAMBA_ROOT_PREFIX=/micromamba \
   && . /micromamba/etc/profile.d/mamba.sh \
-  && micromamba activate xplot \
-  && mkdir /root/xplot/build \
-  && cd /root/xplot/build \
+  && micromamba activate clingmpl \
+  && mkdir /root/matplotlib-cpp/build \
+  && cd /root/matplotlib-cpp/build \
   && env \
   && cmake \
-    -D CMAKE_INSTALL_PREFIX=/root/xplot-install \
-    -D DOWNLOAD_GTEST=ON \
+    -D CMAKE_INSTALL_PREFIX=/root/matplotlib-cpp-install \
     -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld" \
     -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" \
-    -D CMAKE_CXX_FLAGS="--sysroot=/micromamba/envs/xplot/x86_64-conda-linux-gnu/sysroot/" \
-    -D CMAKE_C_FLAGS="--sysroot=/micromamba/envs/xplot/x86_64-conda-linux-gnu/sysroot/" \
+    -D CMAKE_CXX_FLAGS="--sysroot=/micromamba/envs/clingmpl/x86_64-conda-linux-gnu/sysroot/" \
+    -D CMAKE_C_FLAGS="--sysroot=/micromamba/envs/clingmpl/x86_64-conda-linux-gnu/sysroot/" \
     .. \
-  && make -j4 install \
-  && make -j4 test_xplot \
-  && cd test \
-  && ./test_xplot
+  && make \
+  && make install \
+  && make xkcd \
+  && ./bin/xkcd
+
+COPY enter.sh /root/enter.sh
 
 FROM ubuntu:devel as Runner
 
@@ -54,14 +55,16 @@ COPY environment.yml /root/environment.yml
 RUN export MAMBA_EXE=/usr/bin/micromamba \
   && export MAMBA_ROOT_PREFIX=/micromamba \
   && . /micromamba/etc/profile.d/mamba.sh \
-  && micromamba create -n xplot -f /root/environment.yml
+  && micromamba create -n clingmpl -f /root/environment.yml
 
-COPY --from=Builder /root/xplot-install/include /micromamba/envs/xplot/include/
-COPY --from=Builder /root/xplot-install/lib /micromamba/envs/xplot/lib/
+COPY --from=Builder /root/matplotlib-cpp-install/include /micromamba/envs/clingmpl/include/
+COPY --from=Builder /root/matplotlib-cpp-install/lib /micromamba/envs/clingmpl/lib/
+COPY kernels /micromamba/envs/clingmpl/share/jupyter/kernels
 
 EXPOSE 8889
 
 RUN mkdir /notebooks
 
+COPY enter.sh /root/enter.sh
 COPY start.sh /root/start.sh
 CMD /root/start.sh

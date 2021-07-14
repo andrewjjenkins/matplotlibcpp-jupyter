@@ -5,7 +5,4 @@ channels:
 dependencies:
   - xeus-cling
   - jupyter
-  - bqplot=0.11.5
-  - widgetsnbextension >=3.0.0
-  - xproperty
-  - xwidgets
+  - matplotlib
