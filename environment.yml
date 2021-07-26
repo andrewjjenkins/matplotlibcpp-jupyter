@@ -6,3 +6,4 @@ dependencies:
   - xeus-cling
   - jupyter
   - matplotlib
+  - nlohmann_json=3.9

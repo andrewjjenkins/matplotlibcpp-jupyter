@@ -14,3 +14,4 @@ dependencies:
   - libstdcxx-devel_linux-64
   - cmake
   - matplotlib
+  - nlohmann_json=3.9
