@@ -29,8 +29,11 @@ RUN export MAMBA_EXE=/usr/bin/micromamba \
     -D CMAKE_INSTALL_PREFIX=/root/matplotlib-cpp-install \
     -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld" \
     -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" \
-    -D CMAKE_CXX_FLAGS="--sysroot=/micromamba/envs/clingmpl/x86_64-conda-linux-gnu/sysroot/" \
-    -D CMAKE_C_FLAGS="--sysroot=/micromamba/envs/clingmpl/x86_64-conda-linux-gnu/sysroot/" \
+    -D CMAKE_CXX_FLAGS="\
+      --sysroot=/micromamba/envs/clingmpl/x86_64-conda-linux-gnu/sysroot/ \
+      -isystem /micromamba/envs/clingmpl/include/ \
+      -std=c++17 \
+      " \
     .. \
   && make \
   && make install \
