@@ -62,6 +62,7 @@ RUN export MAMBA_EXE=/usr/bin/micromamba \
 
 COPY --from=Builder /root/matplotlib-cpp-install/include /micromamba/envs/clingmpl/include/
 COPY --from=Builder /root/matplotlib-cpp-install/lib /micromamba/envs/clingmpl/lib/
+COPY matplotlibcpp-jupyter.h /micromamba/envs/clingmpl/include/
 COPY kernels /micromamba/envs/clingmpl/share/jupyter/kernels
 
 EXPOSE 8889
