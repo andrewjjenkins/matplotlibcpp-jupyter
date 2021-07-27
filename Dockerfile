@@ -14,11 +14,11 @@ COPY environment.yml /root/environment.yml
 RUN export MAMBA_EXE=/usr/bin/micromamba \
   && export MAMBA_ROOT_PREFIX=/micromamba \
   && . /micromamba/etc/profile.d/mamba.sh \
-  && micromamba create -n clingmpl -f /root/environment.yml
+  && micromamba create -n matplotlibcpp-jupyter -f /root/environment.yml
 
-COPY matplotlib-cpp/matplotlibcpp.h /micromamba/envs/clingmpl/include/
-COPY matplotlibcpp-jupyter.h /micromamba/envs/clingmpl/include/
-COPY kernels /micromamba/envs/clingmpl/share/jupyter/kernels
+COPY matplotlib-cpp/matplotlibcpp.h /micromamba/envs/matplotlibcpp-jupyter/include/
+COPY matplotlibcpp-jupyter.h /micromamba/envs/matplotlibcpp-jupyter/include/
+COPY kernels /micromamba/envs/matplotlibcpp-jupyter/share/jupyter/kernels
 
 EXPOSE 8889
 

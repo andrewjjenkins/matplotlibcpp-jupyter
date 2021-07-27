@@ -1,4 +1,4 @@
-name: xplot
+name: matplotlibcpp-jupyter
 channels:
   - QuantStack
   - conda-forge
