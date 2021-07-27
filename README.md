@@ -80,6 +80,18 @@ into your project.
 2. Install [xeus-cling](https://github.com/jupyter-xeus/xeus-cling) and
 dependencies (see [environment.yml](environment.yml) if you use conda/mamba/similar).
 
+# How do I make other plots?  What's the API?
+
+This project doesn't host the matplotlib C++ API.
+
+Basically, look at all the examples and API in
+[matplotlib](https://github.com/lava/matplotlib-cpp/blob/master/README.md),
+and everywhere you see `plt::show()` or `plt::save()`, replace it with
+`plt::jupyter::show()` instead.
+
+Note that you must return a `plt::jupyter::shown` object for xeus-cling and
+Jupyter to render it (see the example above for a function signature).
+
 # LICENSE
 
 [MIT](LICENSE)
